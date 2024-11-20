@@ -25,6 +25,7 @@ type User = {
   email: string; // Email address for login and notifications
   alarms: AlarmConfig[]; // List of user's alarms
   createdAt: Date; // Account creation timestamp
+  updatedAt?: Date; // Timestamp for the last update
 };
 ```
 3. MQTT Message Payload
@@ -90,6 +91,7 @@ CREATE TABLE users (
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP
 );
 ```
 Alarms Table
