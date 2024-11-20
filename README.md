@@ -1,5 +1,12 @@
-# cciot-dashboard
+# Link to presentation
+For editing: https://www.canva.com/design/DAGV_P8oYL8/rmmz3Yk8NORneGSFHBDkhg/edit
 
+View only: https://www.canva.com/design/DAGV_P8oYL8/x02Zj4_Y-8euoRlNDfDCDg/view?utm_content=DAGV_P8oYL8&utm_campaign=designshare&utm_medium=link&utm_source=editor
+
+# System architecture
+![CCIOT architecture-System architecture](https://github.com/user-attachments/assets/ed60f3bb-2803-4114-bc10-83b319529f95)
+
+# Type definitions
 1. Alarm Configuration
 This structure represents an alarm's configuration data, such as time, light intensity, and user preferences.
 
