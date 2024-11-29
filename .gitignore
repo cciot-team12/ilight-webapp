@@ -7,5 +7,9 @@ package-lock.json
 */package-lock.json
 
 /certs
-certs
 */certs
+
+node_modules/
+*/node_modules/
+/node_modules
+node_modules
