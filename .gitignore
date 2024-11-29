@@ -1,0 +1,11 @@
+/.env
+.env
+*/.env
+
+package-lock.json
+/package-lock.json
+*/package-lock.json
+
+/certs
+certs
+*/certs
