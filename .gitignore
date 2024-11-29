@@ -10,6 +10,3 @@ package-lock.json
 */certs
 
 node_modules/
-*/node_modules/
-/node_modules
-node_modules
