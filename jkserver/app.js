@@ -17,6 +17,33 @@ let alarmTime = null; // The alarm time, e.g., "14:30"
 let brightness = 0; // Default brightness (0-100)
 let sunriseActive = false; // Flag to track if sunrise simulation is active
 let alarmEnabled = true; // Default: Alarm is enabled
+// Frontend Endpoint Configuration
+
+const frontendEndpoint = 'http://<frontend-ip>:<port>/alarm'; // Replace with your frontend's IP and port
+
+// Function to Send HTTP Requests to Frontend
+async function sendHttpRequestToFrontend(payload) {
+  try {
+    const response = await axios.post(frontendEndpoint, payload);
+    console.log(`HTTP request sent to frontend: ${JSON.stringify(payload)}`);
+    console.log(`Frontend response: ${response.data}`);
+  } catch (error) {
+    console.error('Error sending HTTP request to frontend:', error.message);
+  }
+}
+
+// Function to Handle MQTT Messages
+function handleMqttMessage(topic, payload) {
+  const message = JSON.parse(payload.toString());
+  console.log(`MQTT message received on topic "${topic}":`, message);
+
+  if (topic === 'commands/alarm' && message.command === 'turn-off') {
+    console.log('Turning off alarm via MQTT signal');
+    alarmEnabled = false;
+    // Send HTTP request to frontend to update alarm state
+    sendHttpRequestToFrontend({ type: 'alarm', status: 'off' });
+  }
+}
 
 function setBrightness(level) {
   brightness = Math.min(100, Math.max(0, level)); // Ensure brightness is between 0 and 100
@@ -97,6 +124,20 @@ const typeMapping = {
   brightness: handleBrightnessCommand,
   'alarm-control': handleAlarmControlCommand
 };
+
+// MQTT Event: Device Connected
+device.on('connect', () => {
+  console.log('Connected to AWS IoT');
+
+  // Subscribe to relevant topics
+  device.subscribe('commands/alarm');
+  console.log('Subscribed to topic: commands/alarm');
+});
+
+// MQTT Event: Message Received
+device.on('message', (topic, payload) => {
+  handleMqttMessage(topic, payload);
+});
 
 // Set up HTTP server
 const server = http.createServer((req, res) => {
