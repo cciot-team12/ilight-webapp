@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Fab, Typography } from "@mui/material";
+import { Button, Fab, Typography } from "@mui/material";
 import { AlarmConfig } from "../../lib/types";
 import AlarmItem from "./components/AlarmItem";
 import AlarmForm from "../alarm-form/AlarmFormScreen";
 import { BiPlus } from "react-icons/bi";
+import brightnessApi from "../../lib/api/brightnessApi";
 
 const initialAlarms: AlarmConfig[] = [
   {
@@ -39,6 +40,7 @@ const HomeScreen: React.FC = () => {
   const [alarms, setAlarms] = useState<AlarmConfig[]>(initialAlarms);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [editingAlarm, setEditingAlarm] = useState<AlarmConfig | null>(null);
+  const [currentBrightness, setCurrentBrightness] = useState(0);
 
   const openNewAlarmForm = () => {
     setEditingAlarm(null);
@@ -86,6 +88,26 @@ const HomeScreen: React.FC = () => {
     );
   };
 
+  const handleIncreaseBrightness = async () => {
+    try {
+      const response = await brightnessApi.increase();
+      console.log(response.data);
+      setCurrentBrightness(currentBrightness + 10);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDecreaseBrightness = async () => {
+    try {
+      const response = await brightnessApi.decrease();
+      console.log(response.data);
+      setCurrentBrightness(currentBrightness - 10);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       {isFormOpen ? (
@@ -97,6 +119,30 @@ const HomeScreen: React.FC = () => {
       ) : (
         <>
           <div className="w-full h-screen p-6 bg-gray-900 text-white space-y-6">
+            <Typography variant="h4" className="mb-6">
+              Brightness
+            </Typography>
+            <Typography variant="body1" className="mb-6">
+              Current brightness: {currentBrightness}
+            </Typography>
+            <div className="flex flex-row w-full space-x-6">
+              <Button
+                variant="contained"
+                className="w-full"
+                color="primary"
+                onClick={handleDecreaseBrightness}
+              >
+                Brightness -
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                className="w-full"
+                onClick={handleIncreaseBrightness}
+              >
+                Brightness +
+              </Button>
+            </div>
             <Typography variant="h4" className="mb-6">
               Alarms
             </Typography>
