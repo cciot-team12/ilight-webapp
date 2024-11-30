@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Upload to ESP32",
+      "type": "shell",
+      "command": "ampy -p COM10 put main.py && ampy -p COM10 run main.py --no-output",
+      "problemMatcher": []
+    }
+  ]
+}

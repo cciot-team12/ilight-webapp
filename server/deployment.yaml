@@ -26,7 +26,7 @@ kind: Service
 metadata:
   name: nodejs-server-service
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: nodejs-server
   ports:
