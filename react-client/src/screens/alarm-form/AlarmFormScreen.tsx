@@ -40,7 +40,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
   );
 
   const handleRepeatDaysChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newRepeatDays: string[]
   ) => {
     setRepeatDays(newRepeatDays);
