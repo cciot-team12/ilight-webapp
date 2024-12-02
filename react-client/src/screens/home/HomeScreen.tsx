@@ -12,7 +12,7 @@ const initialAlarms: AlarmConfig[] = [
     userId: "user1",
     time: "07:00:00",
     repeatDays: ["Mon", "Wed", "Fri"],
-    lightIntensity: 80,
+    lightIntensity: 100,
     isActive: true,
     createdAt: new Date(),
   },
@@ -21,7 +21,7 @@ const initialAlarms: AlarmConfig[] = [
     userId: "user1",
     time: "08:00:00",
     repeatDays: ["Tue", "Thu"],
-    lightIntensity: 50,
+    lightIntensity: 100,
     isActive: true,
     createdAt: new Date(),
   },
@@ -30,7 +30,7 @@ const initialAlarms: AlarmConfig[] = [
     userId: "user1",
     time: "08:00:00",
     repeatDays: ["Sat", "Sun"],
-    lightIntensity: 0,
+    lightIntensity: 100,
     isActive: false,
     createdAt: new Date(),
   },
@@ -122,9 +122,9 @@ const HomeScreen: React.FC = () => {
             <Typography variant="h4" className="mb-6">
               Brightness
             </Typography>
-            <Typography variant="body1" className="mb-6">
+            {/* <Typography variant="body1" className="mb-6">
               Current brightness: {currentBrightness}
-            </Typography>
+            </Typography> */}
             <div className="flex flex-row w-full space-x-6">
               <Button
                 variant="contained"
@@ -132,7 +132,7 @@ const HomeScreen: React.FC = () => {
                 color="primary"
                 onClick={handleDecreaseBrightness}
               >
-                Brightness -
+                Turn off
               </Button>
               <Button
                 variant="contained"
@@ -140,7 +140,7 @@ const HomeScreen: React.FC = () => {
                 className="w-full"
                 onClick={handleIncreaseBrightness}
               >
-                Brightness +
+                Turn on
               </Button>
             </div>
             <Typography variant="h4" className="mb-6">

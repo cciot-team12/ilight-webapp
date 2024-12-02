@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Button,
   Switch,
-  Slider,
   Typography,
   IconButton,
   ToggleButtonGroup,
@@ -32,9 +31,9 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
   const [repeatDays, setRepeatDays] = useState<string[]>(
     initialAlarm ? initialAlarm.repeatDays : []
   );
-  const [lightIntensity, setLightIntensity] = useState<number>(
-    initialAlarm ? initialAlarm.lightIntensity : 50
-  );
+  // const [lightIntensity, setLightIntensity] = useState<number>(
+  //   initialAlarm ? initialAlarm.lightIntensity : 50
+  // );
   const [isActive, setIsActive] = useState<boolean>(
     initialAlarm ? initialAlarm.isActive : true
   );
@@ -58,7 +57,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
         userId: "user1",
         time: formattedTime,
         repeatDays,
-        lightIntensity,
+        lightIntensity: 100,
         isActive,
         createdAt: initialAlarm ? initialAlarm.createdAt : new Date(),
         updatedAt: new Date(),
@@ -123,7 +122,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
             ))}
           </ToggleButtonGroup>
         </div>
-        <div>
+        {/* <div>
           <Typography gutterBottom>
             Light Intensity: {lightIntensity}%
           </Typography>
@@ -135,7 +134,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
             step={5}
             valueLabelDisplay="auto"
           />
-        </div>
+        </div> */}
         <div className="flex items-center">
           <Typography className="mr-2">Active</Typography>
           <Switch
