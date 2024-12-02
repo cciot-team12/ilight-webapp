@@ -95,7 +95,7 @@ const HomeScreen: React.FC = () => {
     );
   };
 
-  const handleIncreaseBrightness = async () => {
+  const handleTurnOn = async () => {
     try {
       const response = await brightnessApi.turnOn();
       console.log(response.data);
@@ -105,9 +105,9 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const handleDecreaseBrightness = async () => {
+  const handleTurnOff = async () => {
     try {
-      const response = await brightnessApi.decrease();
+      const response = await brightnessApi.turnOff();
       console.log(response.data);
       setCurrentBrightness(currentBrightness - 10);
     } catch (error) {
@@ -147,7 +147,7 @@ const HomeScreen: React.FC = () => {
                 variant="contained"
                 className="w-full"
                 color="primary"
-                onClick={handleDecreaseBrightness}
+                onClick={handleTurnOff}
               >
                 Turn off
               </Button>
@@ -155,7 +155,7 @@ const HomeScreen: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 className="w-full"
-                onClick={handleIncreaseBrightness}
+                onClick={handleTurnOn}
               >
                 Turn on
               </Button>

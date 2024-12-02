@@ -20,6 +20,7 @@ let maxBrightness = 100; // Maximum brightness level
 let sunriseActive = false; // Flag to track if sunrise simulation is active
 let alarmEnabled = true; // Default: Alarm is enabled
 const frontendEndpoint = "http://<frontend-ip>:<port>/alarm"; // Replace with your frontend's IP and port
+let sunriseInterval = null;
 
 function logAllAlarms() {
   console.log("Current Alarms:");
@@ -169,16 +170,33 @@ function startSunriseSimulation() {
   const totalIntervals = 18; // 3 minutes = 180 seconds, divided into 18 steps (10 seconds per step)
   const brightnessStep = Math.ceil(maxBrightness / totalIntervals); // Increment per step based on maxBrightness
 
-  const sunriseInterval = setInterval(() => {
-    if (intervalCount < totalIntervals) {
+  // Clear any existing interval
+  if (sunriseInterval !== null) {
+    clearInterval(sunriseInterval);
+  }
+
+  sunriseInterval = setInterval(() => {
+    if (intervalCount < totalIntervals && sunriseActive) {
       setBrightness(brightness + brightnessStep); // Increment brightness
       intervalCount++;
     } else {
       clearInterval(sunriseInterval);
+      sunriseInterval = null;
       sunriseActive = false;
       console.log("Sunrise simulation complete");
     }
-  }, 1000); // Increase brightness every 10 seconds
+  }, 1000); // Increase brightness every 1 second
+}
+
+function stopSunriseSimulation() {
+  console.log("Stopping sunrise simulation...");
+  if (sunriseInterval !== null) {
+    clearInterval(sunriseInterval);
+    sunriseInterval = null;
+  }
+  sunriseActive = false;
+  setBrightness(0); // Reset brightness to 0
+  console.log("Sunrise simulation stopped");
 }
 
 // Handle brightness commands, including setting max brightness
@@ -206,6 +224,8 @@ function handleAlarmCommand(data) {
     disableAlarm(data.time, ["daily"]); // Disable a specific daily alarm
   } else if (data.command === "enable") {
     enableAlarm(data.time, ["daily"]); // Enable a specific daily alarm
+  } else if (data.message === "Alarm turned off") {
+    stopSunriseSimulation();
   } else {
     console.error("Unknown alarm command:", data.command);
   }
@@ -239,16 +259,17 @@ const typeMapping = {
 
 // MQTT Event: Device Connected
 device.on("connect", () => {
+  const topic = "status/alarm";
   console.log("Connected to AWS IoT");
-  device.subscribe("commands/alarm");
-  console.log("Subscribed to topic: commands/alarm");
+  device.subscribe(topic);
+  console.log("Subscribed to topic: ", topic);
 });
 
 // MQTT Event: Message Received
 device.on("message", (topic, payload) => {
   const message = JSON.parse(payload.toString());
   console.log(`MQTT message received on topic "${topic}":`, message);
-  if (topic === "commands/alarm") handleAlarmCommand(message);
+  if (topic === "status/alarm") handleAlarmCommand(message);
 });
 
 // HTTP Server
