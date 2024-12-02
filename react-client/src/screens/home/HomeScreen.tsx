@@ -5,6 +5,7 @@ import AlarmItem from "./components/AlarmItem";
 import AlarmForm from "../alarm-form/AlarmFormScreen";
 import { BiPlus } from "react-icons/bi";
 import brightnessApi from "../../lib/api/brightnessApi";
+import alarmApi from "../../lib/api/alarmApi";
 
 const initialAlarms: AlarmConfig[] = [
   {
@@ -65,6 +66,7 @@ const HomeScreen: React.FC = () => {
         return [...prevAlarms, alarm];
       }
     });
+    alarmApi.set(alarm.time.substring(0, 5));
     setIsFormOpen(false);
   };
 
