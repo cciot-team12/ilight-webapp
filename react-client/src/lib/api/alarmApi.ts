@@ -5,6 +5,7 @@ const alarmApi = {
     unset: (alarm: string) => apiClient.post("/", { type: "alarm", command: "unset", time: alarm }),
     turnOn: () => apiClient.post("/", { type: "alarm-control", command: "on" }),
     turnOff: () => apiClient.post("/", { type: "alarm-control", command: "off" }),
+    triggerAlarm: () => apiClient.post("/", { type: "alarm-control", command: "triggerAlarm" }),
 }
 
 export default alarmApi;

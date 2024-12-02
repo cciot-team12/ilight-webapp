@@ -115,6 +115,16 @@ const HomeScreen: React.FC = () => {
     }
   };
 
+  // called to simulate alarm triggering, starts sunrise simulation on backend
+  const handleTriggerAlarm = async () => {
+    try {
+      const response = await alarmApi.triggerAlarm();
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       {isFormOpen ? (
@@ -150,6 +160,14 @@ const HomeScreen: React.FC = () => {
                 Turn on
               </Button>
             </div>
+            <Button
+              variant="contained"
+              color="secondary"
+              className="w-full"
+              onClick={handleTriggerAlarm}
+            >
+              Simulate an alarm triggering
+            </Button>
             <Typography variant="h4" className="mb-6">
               Alarms
             </Typography>

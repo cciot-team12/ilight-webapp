@@ -178,7 +178,7 @@ function startSunriseSimulation() {
       sunriseActive = false;
       console.log("Sunrise simulation complete");
     }
-  }, 10000); // Increase brightness every 10 seconds
+  }, 1000); // Increase brightness every 10 seconds
 }
 
 // Handle brightness commands, including setting max brightness
@@ -218,6 +218,13 @@ function handleAlarmControlCommand(data) {
   } else if (data.command === "off") {
     alarmEnabled = false;
     console.log("Alarm disabled");
+  } else if (data.command === "triggerAlarm") {
+    console.log("Alarm triggered");
+    device.publish(
+      "status/alarm",
+      JSON.stringify({ message: "Alarm triggered!" })
+    );
+    startSunriseSimulation();
   } else {
     console.error("Unknown alarm control command:", data.command);
   }
