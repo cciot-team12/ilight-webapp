@@ -159,6 +159,7 @@ function setBrightness(level) {
   brightness = Math.min(maxBrightness, Math.max(0, level)); // Ensure brightness does not exceed maxBrightness
   console.log(`Brightness set to: ${brightness}%`);
   device.publish("status/brightness", JSON.stringify({ brightness }));
+  // 1 row, 0 to 100
 }
 
 // Sunrise Simulation
