@@ -75,6 +75,11 @@ const HomeScreen: React.FC = () => {
   };
 
   const toggleAlarm = (id: string) => {
+    if (alarms.find((alarm) => alarm.id === id)?.isActive) {
+      alarmApi.turnOff();
+    } else {
+      alarmApi.turnOn();
+    }
     setAlarms((prevAlarms) =>
       prevAlarms.map((alarm) =>
         alarm.id === id ? { ...alarm, isActive: !alarm.isActive } : alarm
