@@ -1,6 +1,5 @@
 const http = require("http");
 const awsIot = require("aws-iot-device-sdk");
-const axios = require("axios");
 const moment = require("moment"); // For time handling
 require("dotenv").config(); // Load environment variables
 
@@ -107,6 +106,7 @@ function checkAlarms() {
   const now = moment();
   const currentTime = now.format("HH:mm");
   const currentDay = now.format("dddd"); // e.g., "Monday", "Tuesday"
+  console.log("Checking alarms at", currentTime, "on", currentDay);
 
   alarms.forEach((alarm) => {
     if (
@@ -128,22 +128,10 @@ function triggerAlarm() {
     "status/alarm",
     JSON.stringify({ message: "Alarm triggered!" })
   );
-  sendHttpRequestToFrontend({ type: "alarm", status: "triggered" });
 
   // **Start Sunrise Simulation when alarm triggers**
   if (!sunriseActive) {
     startSunriseSimulation();
-  }
-}
-
-// Send HTTP request to frontend
-async function sendHttpRequestToFrontend(payload) {
-  try {
-    const response = await axios.post(frontendEndpoint, payload);
-    console.log(`HTTP request sent to frontend: ${JSON.stringify(payload)}`);
-    console.log(`Frontend response: ${response.data}`);
-  } catch (error) {
-    console.error("Error sending HTTP request to frontend:", error.message);
   }
 }
 
