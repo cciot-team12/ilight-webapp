@@ -97,7 +97,7 @@ const HomeScreen: React.FC = () => {
 
   const handleIncreaseBrightness = async () => {
     try {
-      const response = await brightnessApi.increase();
+      const response = await brightnessApi.turnOn();
       console.log(response.data);
       setCurrentBrightness(currentBrightness + 10);
     } catch (error) {
