@@ -25,10 +25,10 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
   onCancel,
 }) => {
   const [time, setTime] = useState<Dayjs | null>(
-    initialAlarm ? dayjs(initialAlarm.time, "HH:mm:ss") : null
+    initialAlarm ? dayjs(initialAlarm.time, "HH:mm") : null
   );
   const [repeatDays, setRepeatDays] = useState<string[]>(
-    initialAlarm ? initialAlarm.repeatDays : []
+    initialAlarm ? initialAlarm.repeatDays : [...daysOfWeek]
   );
   // const [lightIntensity, setLightIntensity] = useState<number>(
   //   initialAlarm ? initialAlarm.lightIntensity : 50
@@ -50,7 +50,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
       return;
     }
     if (time) {
-      const formattedTime = time.format("HH:mm:ss");
+      const formattedTime = time.format("HH:mm");
       const alarm: AlarmConfig = {
         id: initialAlarm ? initialAlarm.id : Date.now().toString(),
         userId: "user1",
@@ -108,7 +108,9 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
               <ToggleButton
                 key={day}
                 value={day}
-                selected={repeatDays.includes(day)}
+                selected={
+                  repeatDays.includes(day) || repeatDays.includes("daily")
+                }
                 aria-label={day}
                 sx={{
                   borderRadius: "50%",

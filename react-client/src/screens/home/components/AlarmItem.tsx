@@ -17,7 +17,7 @@ const AlarmItem: React.FC<AlarmItemProps> = ({ alarm, onToggle, onEdit }) => (
   >
     <div>
       <Typography variant="h5" className="text-white">
-        {dayjs(alarm.time, "HH:mm:ss").format("HH:mm")}
+        {dayjs(alarm.time, "HH:mm").format("HH:mm")}
       </Typography>
       <Typography variant="body2" className="text-gray-400">
         {alarm.repeatDays

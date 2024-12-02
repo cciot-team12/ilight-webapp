@@ -2,6 +2,12 @@ const http = require("http");
 const awsIot = require("aws-iot-device-sdk");
 const moment = require("moment"); // For time handling
 require("dotenv").config(); // Load environment variables
+const {
+  createAlarmInDB,
+  readAllAlarmsInDB,
+  deleteAlarmInDB,
+  updateAlarmInDB,
+} = require("./db"); // Adjust the path if necessary
 
 // AWS IoT Device Configuration
 const device = awsIot.device({
@@ -21,6 +27,109 @@ let alarmEnabled = true; // Default: Alarm is enabled
 const frontendEndpoint = "http://<frontend-ip>:<port>/alarm"; // Replace with your frontend's IP and port
 let sunriseInterval = null;
 
+// Load alarms from the database on server start
+async function loadAlarms() {
+  try {
+    alarms = await readAllAlarmsInDB();
+    console.log("Alarms loaded from database:", alarms);
+  } catch (error) {
+    console.error("Error loading alarms from database:", error);
+  }
+}
+
+// Remove an alarm
+async function removeAlarm(time, repeat) {
+  try {
+    // Find the alarm in the array
+    const alarmToRemove = alarms.find(
+      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",") // Adjust comparison if needed
+    );
+
+    if (!alarmToRemove) {
+      console.log("Alarm not found.");
+      return;
+    }
+
+    // Delete from the database
+    const deletionSuccess = await deleteAlarmInDB(alarmToRemove.id);
+
+    if (deletionSuccess) {
+      // Remove from the alarms array
+      alarms = alarms.filter((alarm) => alarm.id !== alarmToRemove.id);
+      console.log(`Alarm removed: ${time}, Repeat: ${repeat.join(", ")}`);
+      logAllAlarms();
+    } else {
+      console.error("Error deleting alarm from database.");
+    }
+  } catch (error) {
+    console.error("Error removing alarm:", error);
+  }
+}
+
+async function disableAlarm(time, repeat) {
+  try {
+    // Find the alarm in the array
+    const alarmToUpdate = alarms.find(
+      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",")
+    );
+
+    if (!alarmToUpdate) {
+      console.log("Alarm not found.");
+      return;
+    }
+
+    // Update in the database
+    const updatedAlarm = await updateAlarmInDB(
+      alarmToUpdate.id,
+      null,
+      null,
+      true
+    );
+
+    // Update the alarms array
+    alarms = alarms.map((alarm) =>
+      alarm.id === alarmToUpdate.id ? updatedAlarm : alarm
+    );
+
+    console.log(`Alarm disabled: ${time}, Repeat: ${repeat.join(", ")}`);
+    logAllAlarms();
+  } catch (error) {
+    console.error("Error disabling alarm:", error);
+  }
+}
+
+async function enableAlarm(time, repeat) {
+  try {
+    // Find the alarm in the array
+    const alarmToUpdate = alarms.find(
+      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",")
+    );
+
+    if (!alarmToUpdate) {
+      console.log("Alarm not found.");
+      return;
+    }
+
+    // Update in the database
+    const updatedAlarm = await updateAlarmInDB(
+      alarmToUpdate.id,
+      null,
+      null,
+      false
+    );
+
+    // Update the alarms array
+    alarms = alarms.map((alarm) =>
+      alarm.id === alarmToUpdate.id ? updatedAlarm : alarm
+    );
+
+    console.log(`Alarm enabled: ${time}, Repeat: ${repeat.join(", ")}`);
+    logAllAlarms();
+  } catch (error) {
+    console.error("Error enabling alarm:", error);
+  }
+}
+
 function logAllAlarms() {
   console.log("Current Alarms:");
   if (alarms.length === 0) {
@@ -28,18 +137,27 @@ function logAllAlarms() {
   } else {
     alarms.forEach((alarm, index) => {
       console.log(
-        `${index + 1}. Time: ${alarm.time}, Repeat: ${alarm.repeat.join(
-          ", "
-        )}, Disabled: ${alarm.disabled}`
+        `${index + 1}. Time: ${alarm.time}, Repeat: ${
+          alarm.repeat
+        }, Disabled: ${alarm.disabled}`
       );
     });
   }
 }
 // Add a new alarm
-function addAlarm(time, repeat) {
-  alarms.push({ time, repeat, disabled: false }); // Add the disabled flag
-  console.log(`Alarm added: ${time}, Repeat: ${repeat.join(", ")}`);
-  logAllAlarms();
+async function addAlarm(time, repeat) {
+  try {
+    // Create alarm in the database
+    const newAlarm = await createAlarmInDB(time, repeat.join(","), false);
+
+    // Add to the alarms array
+    alarms.push(newAlarm);
+
+    console.log(`Alarm added: ${time}, Repeat: ${repeat.join(", ")}`);
+    logAllAlarms();
+  } catch (error) {
+    console.error("Error adding alarm:", error);
+  }
 }
 
 // Remove an alarm
@@ -204,15 +322,15 @@ function handleBrightnessCommand(data) {
 }
 
 // Handle alarm commands, including disable and enable
-function handleAlarmCommand(data) {
+async function handleAlarmCommand(data) {
   if (data.command === "set") {
-    addAlarm(data.time, ["daily"]); // Add a daily alarm
+    await addAlarm(data.time, ["daily"]); // Add a daily alarm
   } else if (data.command === "remove") {
-    removeAlarm(data.time, ["daily"]); // Remove a specific daily alarm
+    await removeAlarm(data.time, ["daily"]); // Remove a specific daily alarm
   } else if (data.command === "disable") {
-    disableAlarm(data.time, ["daily"]); // Disable a specific daily alarm
+    await disableAlarm(data.time, ["daily"]); // Disable a specific daily alarm
   } else if (data.command === "enable") {
-    enableAlarm(data.time, ["daily"]); // Enable a specific daily alarm
+    await enableAlarm(data.time, ["daily"]); // Enable a specific daily alarm
   } else if (data.message === "Alarm turned off") {
     stopSunriseSimulation();
   } else {
@@ -269,19 +387,31 @@ const server = http.createServer((req, res) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type"); // Allowed headers
   // **Handle preflight OPTIONS request**
   if (req.method === "OPTIONS") {
-    res.writeHead(204); // No Content
+    res.writeHead(204, {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    });
     res.end();
-    return;
-  }
-  if (req.method === "POST") {
+  } else if (req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        status: "success",
+        alarms: alarms,
+      })
+    );
+  } else if (req.method === "POST") {
     let body = "";
     req.on("data", (chunk) => (body += chunk));
-    req.on("end", () => {
+    req.on("end", async () => {
       try {
         const data = JSON.parse(body);
         console.log("Received HTTP input:", data);
         if (data.type && typeMapping[data.type]) {
-          typeMapping[data.type](data);
+          // Call the handler asynchronously
+          await typeMapping[data.type](data);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(
             JSON.stringify({ status: "success", message: "Command processed" })
@@ -296,9 +426,11 @@ const server = http.createServer((req, res) => {
           );
         }
       } catch (err) {
-        console.error("Error parsing HTTP input:", err);
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ status: "error", message: "Invalid JSON" }));
+        console.error("Error processing request:", err);
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ status: "error", message: "Internal server error" })
+        );
       }
     });
   } else {
@@ -314,3 +446,6 @@ server.listen(3000, () => {
 
 // Periodic Alarm Check
 setInterval(checkAlarms, 60000);
+
+// on server start, load alarms from the database
+loadAlarms();
