@@ -31,7 +31,7 @@ let sunriseInterval = null;
 async function loadAlarms() {
   try {
     alarms = await readAllAlarmsInDB();
-    console.log("Alarms loaded from database:", alarms);
+    // console.log("Alarms loaded from database:", alarms);
   } catch (error) {
     console.error("Error loading alarms from database:", error);
   }
@@ -66,12 +66,12 @@ async function removeAlarm(time, repeat) {
   }
 }
 
-async function disableAlarm(time, repeat) {
+async function disableAlarm(id) {
   try {
     // Find the alarm in the array
     const alarmToUpdate = alarms.find(
-      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",")
-    );
+      (alarm) => alarm.id === id
+    )
 
     if (!alarmToUpdate) {
       console.log("Alarm not found.");
@@ -91,19 +91,19 @@ async function disableAlarm(time, repeat) {
       alarm.id === alarmToUpdate.id ? updatedAlarm : alarm
     );
 
-    console.log(`Alarm disabled: ${time}, Repeat: ${repeat.join(", ")}`);
+    console.log(`Alarm disabled: ${updatedAlarm.time}`);
     logAllAlarms();
   } catch (error) {
     console.error("Error disabling alarm:", error);
   }
 }
 
-async function enableAlarm(time, repeat) {
+async function enableAlarm(id) {
   try {
     // Find the alarm in the array
     const alarmToUpdate = alarms.find(
-      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",")
-    );
+      (alarm) => alarm.id === id
+    )
 
     if (!alarmToUpdate) {
       console.log("Alarm not found.");
@@ -123,7 +123,7 @@ async function enableAlarm(time, repeat) {
       alarm.id === alarmToUpdate.id ? updatedAlarm : alarm
     );
 
-    console.log(`Alarm enabled: ${time}, Repeat: ${repeat.join(", ")}`);
+    console.log(`Alarm enabled: ${updatedAlarm.time}`);
     logAllAlarms();
   } catch (error) {
     console.error("Error enabling alarm:", error);
@@ -171,53 +171,6 @@ function removeAlarm(time, repeat) {
   logAllAlarms();
 }
 
-// Disable a specific alarm
-function disableAlarm(time, repeat) {
-  let found = false;
-  alarms = alarms.map((alarm) => {
-    if (
-      alarm.time === time &&
-      JSON.stringify(alarm.repeat) === JSON.stringify(repeat)
-    ) {
-      alarm.disabled = true; // Mark the alarm as disabled
-      found = true;
-    }
-    return alarm;
-  });
-
-  if (found) {
-    console.log(`Alarm disabled: ${time}, Repeat: ${repeat.join(", ")}`);
-  } else {
-    console.error(
-      `No matching alarm found for time: ${time}, Repeat: ${repeat.join(", ")}`
-    );
-  }
-  logAllAlarms();
-}
-
-// Enable a specific alarm
-function enableAlarm(time, repeat) {
-  let found = false;
-  alarms = alarms.map((alarm) => {
-    if (
-      alarm.time === time &&
-      JSON.stringify(alarm.repeat) === JSON.stringify(repeat)
-    ) {
-      alarm.disabled = false; // Enable the alarm
-      found = true;
-    }
-    return alarm;
-  });
-
-  if (found) {
-    console.log(`Alarm enabled: ${time}, Repeat: ${repeat.join(", ")}`);
-  } else {
-    console.error(
-      `No matching alarm found for time: ${time}, Repeat: ${repeat.join(", ")}`
-    );
-  }
-  logAllAlarms();
-}
 
 // Check and trigger alarms
 function checkAlarms() {
@@ -327,10 +280,10 @@ async function handleAlarmCommand(data) {
     await addAlarm(data.time, ["daily"]); // Add a daily alarm
   } else if (data.command === "remove") {
     await removeAlarm(data.time, ["daily"]); // Remove a specific daily alarm
-  } else if (data.command === "disable") {
-    await disableAlarm(data.time, ["daily"]); // Disable a specific daily alarm
-  } else if (data.command === "enable") {
-    await enableAlarm(data.time, ["daily"]); // Enable a specific daily alarm
+  } else if (data.command === "off") {
+    await disableAlarm(data.id); // Disable a specific daily alarm
+  } else if (data.command === "on") {
+    await enableAlarm(data.id); // Enable a specific daily alarm
   } else if (data.message === "Alarm turned off") {
     stopSunriseSimulation();
   } else {
@@ -338,12 +291,14 @@ async function handleAlarmCommand(data) {
   }
 }
 
-function handleAlarmControlCommand(data) {
+async function handleAlarmControlCommand(data) {
   if (data.command === "on") {
     alarmEnabled = true;
+    await enableAlarm(data.id); 
     console.log("Alarm enabled");
   } else if (data.command === "off") {
     alarmEnabled = false;
+    await disableAlarm(data.id); 
     console.log("Alarm disabled");
   } else if (data.command === "triggerAlarm") {
     console.log("Alarm triggered");

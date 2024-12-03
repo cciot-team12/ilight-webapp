@@ -77,6 +77,7 @@ async function deleteAlarmInDB(alarmID) {
 }
 
 async function updateAlarmInDB(alarmID, time, repeat, disabled) {
+  console.log("updating alarm in DB")
   let query = 'UPDATE alarms SET';
   const values = [];
   let setClauses = [];
