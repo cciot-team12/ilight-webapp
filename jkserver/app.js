@@ -41,9 +41,7 @@ async function loadAlarms() {
 async function removeAlarm(id) {
   try {
     // Find the alarm in the array
-    const alarmToRemove = alarms.find(
-      (alarm) => alarm.id == id
-    );
+    const alarmToRemove = alarms.find((alarm) => alarm.id == id);
 
     if (!alarmToRemove) {
       console.log("Alarm not found.");
@@ -68,9 +66,7 @@ async function removeAlarm(id) {
 async function disableAlarm(id) {
   try {
     // Find the alarm in the array
-    const alarmToUpdate = alarms.find(
-      (alarm) => alarm.id === id
-    )
+    const alarmToUpdate = alarms.find((alarm) => alarm.id === id);
 
     if (!alarmToUpdate) {
       console.log("Alarm not found.");
@@ -100,9 +96,7 @@ async function disableAlarm(id) {
 async function enableAlarm(id) {
   try {
     // Find the alarm in the array
-    const alarmToUpdate = alarms.find(
-      (alarm) => alarm.id === id
-    )
+    const alarmToUpdate = alarms.find((alarm) => alarm.id === id);
 
     if (!alarmToUpdate) {
       console.log("Alarm not found.");
@@ -251,11 +245,13 @@ function handleBrightnessCommand(data) {
   } else if (data.command === "decrease") {
     setBrightness(brightness - 10);
   } else if (data.command === "setMax") {
+    setMaxBrightness(data.maxBrightness); // Set max brightness
+  } else if (data.command === "turnOn") {
     // setMaxBrightness(100); // Set max brightness
-    setBrightness(100)
+    setBrightness(100);
   } else if (data.command === "turnOff") {
     // setMaxBrightness(0); // Set max brightness
-    setBrightness(0)
+    setBrightness(0);
   } else {
     console.error("Unknown brightness command:", data.command);
   }
@@ -277,11 +273,11 @@ async function handleAlarmCommand(data) {
 async function handleAlarmControlCommand(data) {
   if (data.command === "on") {
     alarmEnabled = true;
-    await enableAlarm(data.id); 
+    await enableAlarm(data.id);
     console.log("Alarm enabled");
   } else if (data.command === "off") {
     alarmEnabled = false;
-    await disableAlarm(data.id); 
+    await disableAlarm(data.id);
     console.log("Alarm disabled");
   } else if (data.command === "triggerAlarm") {
     console.log("Alarm triggered");
