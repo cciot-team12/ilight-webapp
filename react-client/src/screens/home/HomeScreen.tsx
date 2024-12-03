@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Fab, Typography } from "@mui/material";
 import { AlarmConfig } from "../../lib/types";
 import AlarmItem from "./components/AlarmItem";
@@ -6,42 +6,48 @@ import AlarmForm from "../alarm-form/AlarmFormScreen";
 import { BiPlus } from "react-icons/bi";
 import brightnessApi from "../../lib/api/brightnessApi";
 import alarmApi from "../../lib/api/alarmApi";
+import { CgSpinner } from "react-icons/cg";
 
-const initialAlarms: AlarmConfig[] = [
-  {
-    id: "1",
-    userId: "user1",
-    time: "07:00:00",
-    repeatDays: ["Mon", "Wed", "Fri"],
-    lightIntensity: 100,
-    isActive: true,
-    createdAt: new Date(),
-  },
-  {
-    id: "2",
-    userId: "user1",
-    time: "08:00:00",
-    repeatDays: ["Tue", "Thu"],
-    lightIntensity: 100,
-    isActive: true,
-    createdAt: new Date(),
-  },
-  {
-    id: "3",
-    userId: "user1",
-    time: "08:00:00",
-    repeatDays: ["Sat", "Sun"],
-    lightIntensity: 100,
-    isActive: false,
-    createdAt: new Date(),
-  },
-];
+const initialAlarms: AlarmConfig[] = [];
 
 const HomeScreen: React.FC = () => {
   const [alarms, setAlarms] = useState<AlarmConfig[]>(initialAlarms);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [editingAlarm, setEditingAlarm] = useState<AlarmConfig | null>(null);
   const [currentBrightness, setCurrentBrightness] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const fetchAlarms = async () => {
+    setLoading(true);
+    try {
+      const response = await alarmApi.get();
+      const alarms: {
+        id: string;
+        time: string;
+        repeat: string;
+        disabled: boolean;
+      }[] = response.data.alarms;
+      console.log(response.data);
+      setAlarms(
+        alarms.map((alarm) => ({
+          id: alarm.id,
+          userId: "user1",
+          time: alarm.time,
+          repeatDays: alarm.repeat.split(","),
+          lightIntensity: 100,
+          isActive: !alarm.disabled,
+          createdAt: new Date(),
+        }))
+      );
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAlarms();
+  }, []);
 
   const openNewAlarmForm = () => {
     setEditingAlarm(null);
@@ -75,6 +81,11 @@ const HomeScreen: React.FC = () => {
   };
 
   const toggleAlarm = (id: string) => {
+    if (alarms.find((alarm) => alarm.id === id)?.isActive) {
+      alarmApi.turnOff();
+    } else {
+      alarmApi.turnOn();
+    }
     setAlarms((prevAlarms) =>
       prevAlarms.map((alarm) =>
         alarm.id === id ? { ...alarm, isActive: !alarm.isActive } : alarm
@@ -90,9 +101,9 @@ const HomeScreen: React.FC = () => {
     );
   };
 
-  const handleIncreaseBrightness = async () => {
+  const handleTurnOn = async () => {
     try {
-      const response = await brightnessApi.increase();
+      const response = await brightnessApi.turnOn();
       console.log(response.data);
       setCurrentBrightness(currentBrightness + 10);
     } catch (error) {
@@ -100,11 +111,21 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const handleDecreaseBrightness = async () => {
+  const handleTurnOff = async () => {
     try {
-      const response = await brightnessApi.decrease();
+      const response = await brightnessApi.turnOff();
       console.log(response.data);
       setCurrentBrightness(currentBrightness - 10);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // called to simulate alarm triggering, starts sunrise simulation on backend
+  const handleTriggerAlarm = async () => {
+    try {
+      const response = await alarmApi.triggerAlarm();
+      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -132,7 +153,7 @@ const HomeScreen: React.FC = () => {
                 variant="contained"
                 className="w-full"
                 color="primary"
-                onClick={handleDecreaseBrightness}
+                onClick={handleTurnOff}
               >
                 Turn off
               </Button>
@@ -140,24 +161,38 @@ const HomeScreen: React.FC = () => {
                 variant="contained"
                 color="secondary"
                 className="w-full"
-                onClick={handleIncreaseBrightness}
+                onClick={handleTurnOn}
               >
                 Turn on
               </Button>
             </div>
+            <Button
+              variant="contained"
+              color="secondary"
+              className="w-full"
+              onClick={handleTriggerAlarm}
+            >
+              Simulate an alarm triggering
+            </Button>
             <Typography variant="h4" className="mb-6">
               Alarms
             </Typography>
             <div>
-              {alarms.map((alarm) => (
-                <AlarmItem
-                  key={alarm.id}
-                  alarm={alarm}
-                  onToggle={toggleAlarm}
-                  onUpdateIntensity={updateLightIntensity}
-                  onEdit={() => openEditAlarmForm(alarm)}
-                />
-              ))}
+              {loading ? (
+                <>
+                  <CgSpinner />
+                </>
+              ) : (
+                alarms.map((alarm) => (
+                  <AlarmItem
+                    key={alarm.id}
+                    alarm={alarm}
+                    onToggle={toggleAlarm}
+                    onUpdateIntensity={updateLightIntensity}
+                    onEdit={() => openEditAlarmForm(alarm)}
+                  />
+                ))
+              )}
             </div>
             <div className="fixed bottom-2 left-1/2">
               <Fab

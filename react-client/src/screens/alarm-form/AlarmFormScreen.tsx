@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Button,
-  Switch,
   Typography,
   IconButton,
   ToggleButtonGroup,
@@ -26,17 +25,17 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
   onCancel,
 }) => {
   const [time, setTime] = useState<Dayjs | null>(
-    initialAlarm ? dayjs(initialAlarm.time, "HH:mm:ss") : null
+    initialAlarm ? dayjs(initialAlarm.time, "HH:mm") : null
   );
   const [repeatDays, setRepeatDays] = useState<string[]>(
-    initialAlarm ? initialAlarm.repeatDays : []
+    initialAlarm ? initialAlarm.repeatDays : [...daysOfWeek]
   );
   // const [lightIntensity, setLightIntensity] = useState<number>(
   //   initialAlarm ? initialAlarm.lightIntensity : 50
   // );
-  const [isActive, setIsActive] = useState<boolean>(
-    initialAlarm ? initialAlarm.isActive : true
-  );
+  // const [isActive, setIsActive] = useState<boolean>(
+  //   initialAlarm ? initialAlarm.isActive : true
+  // );
 
   const handleRepeatDaysChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -51,14 +50,14 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
       return;
     }
     if (time) {
-      const formattedTime = time.format("HH:mm:ss");
+      const formattedTime = time.format("HH:mm");
       const alarm: AlarmConfig = {
         id: initialAlarm ? initialAlarm.id : Date.now().toString(),
         userId: "user1",
         time: formattedTime,
         repeatDays,
         lightIntensity: 100,
-        isActive,
+        isActive: true,
         createdAt: initialAlarm ? initialAlarm.createdAt : new Date(),
         updatedAt: new Date(),
       };
@@ -109,7 +108,9 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
               <ToggleButton
                 key={day}
                 value={day}
-                selected={repeatDays.includes(day)}
+                selected={
+                  repeatDays.includes(day) || repeatDays.includes("daily")
+                }
                 aria-label={day}
                 sx={{
                   borderRadius: "50%",
@@ -135,14 +136,14 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
             valueLabelDisplay="auto"
           />
         </div> */}
-        <div className="flex items-center">
+        {/* <div className="flex items-center">
           <Typography className="mr-2">Active</Typography>
           <Switch
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
             color="primary"
           />
-        </div>
+        </div> */}
       </div>
       <div className="fixed bottom-6 flex w-5/6 justify-between space-x-6">
         <Button
