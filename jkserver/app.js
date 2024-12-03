@@ -38,11 +38,11 @@ async function loadAlarms() {
 }
 
 // Remove an alarm
-async function removeAlarm(time, repeat) {
+async function removeAlarm(id) {
   try {
     // Find the alarm in the array
     const alarmToRemove = alarms.find(
-      (alarm) => alarm.time === time && alarm.repeat === repeat.join(",") // Adjust comparison if needed
+      (alarm) => alarm.id == id
     );
 
     if (!alarmToRemove) {
@@ -56,7 +56,6 @@ async function removeAlarm(time, repeat) {
     if (deletionSuccess) {
       // Remove from the alarms array
       alarms = alarms.filter((alarm) => alarm.id !== alarmToRemove.id);
-      console.log(`Alarm removed: ${time}, Repeat: ${repeat.join(", ")}`);
       logAllAlarms();
     } else {
       console.error("Error deleting alarm from database.");
@@ -159,18 +158,6 @@ async function addAlarm(time, repeat) {
     console.error("Error adding alarm:", error);
   }
 }
-
-// Remove an alarm
-function removeAlarm(time, repeat) {
-  alarms = alarms.filter(
-    (alarm) =>
-      alarm.time !== time ||
-      JSON.stringify(alarm.repeat) !== JSON.stringify(repeat)
-  );
-  console.log(`Alarm removed: ${time}, Repeat: ${repeat.join(", ")}`);
-  logAllAlarms();
-}
-
 
 // Check and trigger alarms
 function checkAlarms() {
@@ -278,12 +265,8 @@ function handleBrightnessCommand(data) {
 async function handleAlarmCommand(data) {
   if (data.command === "set") {
     await addAlarm(data.time, ["daily"]); // Add a daily alarm
-  } else if (data.command === "remove") {
-    await removeAlarm(data.time, ["daily"]); // Remove a specific daily alarm
-  } else if (data.command === "off") {
-    await disableAlarm(data.id); // Disable a specific daily alarm
-  } else if (data.command === "on") {
-    await enableAlarm(data.id); // Enable a specific daily alarm
+  } else if (data.command === "unset") {
+    await removeAlarm(data.id); // Remove a specific daily alarm
   } else if (data.message === "Alarm turned off") {
     stopSunriseSimulation();
   } else {

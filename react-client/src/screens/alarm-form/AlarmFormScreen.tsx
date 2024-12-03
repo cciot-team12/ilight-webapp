@@ -12,6 +12,7 @@ import { TimePicker } from "@mui/x-date-pickers";
 import { AlarmConfig } from "../../lib/types";
 import { BiChevronLeft, BiSave } from "react-icons/bi";
 import { daysOfWeek } from "../../lib/constants";
+import alarmApi from "../../lib/api/alarmApi";
 
 interface AlarmFormProps {
   initialAlarm?: AlarmConfig;
@@ -62,6 +63,7 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
         updatedAt: new Date(),
       };
       onSave(alarm);
+      // alarmApi.set(formattedTime, repeatDays);
     }
   };
 

@@ -72,7 +72,7 @@ const HomeScreen: React.FC = () => {
         return [...prevAlarms, alarm];
       }
     });
-    alarmApi.set(alarm.time.substring(0, 5));
+    alarmApi.set(alarm.time.substring(0, 5), alarm.repeatDays);
     setIsFormOpen(false);
   };
 

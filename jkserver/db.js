@@ -42,6 +42,7 @@ async function run() {
 // run()
 
 async function createAlarmInDB(time, repeat, disabled) {
+  console.log("inserting")
   const uuid = uuidv4();
   const query = `
       INSERT INTO alarms (id, time, repeat, disabled)
