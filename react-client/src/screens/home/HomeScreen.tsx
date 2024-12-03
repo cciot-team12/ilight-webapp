@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Fab, Typography } from "@mui/material";
+import { Button, Fab, Slider, Typography } from "@mui/material";
 import { AlarmConfig } from "../../lib/types";
 import AlarmItem from "./components/AlarmItem";
 import AlarmForm from "../alarm-form/AlarmFormScreen";
@@ -17,6 +17,7 @@ const HomeScreen: React.FC = () => {
   const [currentBrightness, setCurrentBrightness] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const [lightIntensity, setLightIntensity] = useState<number>(100);
   const fetchAlarms = async () => {
     setLoading(true);
     try {
@@ -148,6 +149,22 @@ const HomeScreen: React.FC = () => {
             {/* <Typography variant="body1" className="mb-6">
               Current brightness: {currentBrightness}
             </Typography> */}
+            <div>
+              <Typography gutterBottom>
+                Light Intensity: {lightIntensity}%
+              </Typography>
+              <Slider
+                value={lightIntensity}
+                onChange={(_, value) => {
+                  setLightIntensity(value as number);
+                  brightnessApi.increaseMaxBrightness(value as number);
+                }}
+                min={0}
+                max={100}
+                step={5}
+                valueLabelDisplay="auto"
+              />
+            </div>
             <div className="flex flex-row w-full space-x-6">
               <Button
                 variant="contained"
