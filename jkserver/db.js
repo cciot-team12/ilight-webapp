@@ -34,7 +34,7 @@ async function exec(query, values=undefined) {
 
 async function run() {
   // const query = "SELECT * FROM information_schema;"
-  // const query = "DROP TABLE alarms;"
+  const query = "TRUNCATE alarms;"
   const result = await exec(query);
   console.log(result);  // Print the result of the query
 }

@@ -188,16 +188,14 @@ function triggerAlarm() {
   );
 
   // **Start Sunrise Simulation when alarm triggers**
-  if (!sunriseActive) {
-    startSunriseSimulation();
-  }
+  startSunriseSimulation();
 }
 
 // Set Maximum Brightness
 function setMaxBrightness(level) {
   maxBrightness = Math.min(100, Math.max(0, level)); // Ensure maxBrightness is between 0 and 100
   console.log(`Max brightness set to: ${maxBrightness}%`);
-  device.publish("status/max-brightness", JSON.stringify({ maxBrightness })); //TODO update this to brightness topic
+  // device.publish("status/brightness", JSON.stringify({ maxBrightness })); //TODO update this to brightness topic
 }
 
 // Set Brightness
@@ -253,9 +251,11 @@ function handleBrightnessCommand(data) {
   } else if (data.command === "decrease") {
     setBrightness(brightness - 10);
   } else if (data.command === "setMax") {
-    setMaxBrightness(100); // Set max brightness
+    // setMaxBrightness(100); // Set max brightness
+    setBrightness(100)
   } else if (data.command === "turnOff") {
-    setMaxBrightness(0); // Set max brightness
+    // setMaxBrightness(0); // Set max brightness
+    setBrightness(0)
   } else {
     console.error("Unknown brightness command:", data.command);
   }

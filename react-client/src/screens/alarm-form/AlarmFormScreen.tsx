@@ -63,7 +63,6 @@ const AlarmForm: React.FC<AlarmFormProps> = ({
         updatedAt: new Date(),
       };
       onSave(alarm);
-      // alarmApi.set(formattedTime, repeatDays);
     }
   };
 
