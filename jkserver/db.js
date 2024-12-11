@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
+require("dotenv").config(); // Load environment variables
 
 // Table Schema:
 // const query = `CREATE TABLE alarms (
@@ -7,17 +8,22 @@ const { v4: uuidv4 } = require('uuid');
 // time VARCHAR(100),
 // repeat VARCHAR(100),
 // disabled BOOLEAN
+// // )`
+
+// const query = `CREATE TABLE users (
+// id VARCHAR(100) PRIMARY KEY,
+// name VARCHAR(100),
+// email VARCHAR(100) UNIQUE NOT NULL,
+// created_at TIMESTAMP DEFAULT NOW(),
+// updated_at TIMESTAMP
 // )`
  
 const pool = new Pool({
-  user: 'postgres',
-  password: 'admin!234',
-  host: 'ilight.c1ee2wqcwgd4.ap-southeast-2.rds.amazonaws.com',
-  database: 'ilight',
-  port: 5432,
-  ssl: {
-    rejectUnauthorized: false  // For development; consider proper cert verification in production
-  }
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  port: process.env.PORT
 })
 
 
@@ -34,12 +40,12 @@ async function exec(query, values=undefined) {
 
 async function run() {
   // const query = "SELECT * FROM information_schema;"
-  const query = "TRUNCATE alarms;"
+  // const query = "TRUNCATE alarms;"
   const result = await exec(query);
   console.log(result);  // Print the result of the query
 }
 
-// run()
+run()
 
 async function createAlarmInDB(time, repeat, disabled) {
   console.log("inserting")
