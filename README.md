@@ -200,7 +200,7 @@ These variables are used for secure communication with AWS IoT Core.
 
 ## Step 2: Build the Docker Image
 
-Navigate to the backend code directory (e.g., `jkserver`):
+Navigate to the backend code directory (e.g., `RPi`):
 
 1. Build the Docker image:
 
@@ -252,7 +252,6 @@ If a Postgres database is required:
 Ensure the necessary hardware components (e.g., sensors) are connected to the Raspberry Pi. Configure the application to communicate with these devices.
 
 ---
-
 
 PostgresDB
 Hardware
