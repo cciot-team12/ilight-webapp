@@ -165,6 +165,8 @@ Setup instructions for:
 
 Frontend
 
+---
+
 Backend on RPi + AWS IoT
 
 # Setup Instructions for ilightproj Backend
@@ -235,21 +237,6 @@ Replace `ricinbeans` with your Docker Hub username if applicable.
     kubectl describe svc ilightproj-service
     ```
     Use the `NodePort` value (e.g., `30462`) and the node IP to access the backend: `http://<node-ip>:<node-port>`.
-
----
-
-## Step 4: Postgres Database (Optional)
-
-If a Postgres database is required:
-
-1. Set up the database container using Docker Compose or Kubernetes.
-2. Update the backend code to include database connection strings.
-
----
-
-## Step 5: Hardware Integration
-
-Ensure the necessary hardware components (e.g., sensors) are connected to the Raspberry Pi. Configure the application to communicate with these devices.
 
 ---
 
