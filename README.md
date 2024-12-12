@@ -163,13 +163,25 @@ const wsUpdate: WebSocketUpdate = {
 
 Setup instructions for:
 
-Frontend
+# Frontend Setup instructions
+
+Navigate to the frontend directory and install npm dependencies
+
+```bash
+cd react-client/ && npm i
+```
+
+Run the project
+
+```bash
+npm run dev
+```
+
+In our project, we also deployed the project to the cloud using cloudflare pages GUI. The steps can be followed here: https://developers.cloudflare.com/pages/get-started/git-integration/ 
 
 ---
 
-Backend on RPi + AWS IoT
-
-# Setup Instructions for ilightproj Backend
+# Backend on RPi + AWS IoT Setup Instructions
 
 This guide outlines the steps to set up the ilightproj backend using Docker and Kubernetes, while ensuring the proper configuration of AWS environment variables.
 
