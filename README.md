@@ -252,5 +252,19 @@ Replace `ricinbeans` with your Docker Hub username if applicable.
 
 ---
 
-PostgresDB
-Hardware
+# PostgresDB Setup Instructions
+
+Add the following Postgres-releated enviornment variables to your `.env` file:
+
+```
+HOST=a2egqzjr3o735x-ats.iot.ap-southeast-1.amazonaws.com
+USER=<postgresdb-user>
+PASSWORD=<postgresdb-pw>
+HOST=ilight.c1ee2wqcwgd4.ap-southeast-2.rds.amazonaws.com
+DATABASE=ilight
+PORT=5432
+```
+
+That's it! You can now run the project.
+
+# Hardware
