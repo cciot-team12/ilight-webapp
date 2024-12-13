@@ -267,4 +267,47 @@ PORT=5432
 
 That's it! You can now run the project.
 
-# Hardware
+# Hardware Setup instructions 
+This guide outlines the steps to set up the ilightproj hardware which uses ESP32 Wrover, NeoPixel Ring light, a Switch and a 5V power plug. It also details how to establish MQTT connection with AWS IoT Core.
+
+## Step 1: Connect the components
+Follow the diagram when connecting the wires.
+
+![Screenshot 2024-12-13 105937](https://github.com/user-attachments/assets/19cc12c6-6b11-40b3-bb1e-8d4f14fb089a)
+
+Connect the GPIO of the NeoPixel Ring light to PIN 3 of the ESP32.
+Connect the GPIO of the switch to PIN 22 of the ESP32.
+
+## Step 2: Create a Thing on AWS IOT Cloud, attach policies and save out the certificates and private key
+
+Under All Devices>Things> Create Thing
+![create things](https://github.com/user-attachments/assets/c88eac5c-ac1d-4420-8243-67a0c4dd4c38)
+
+Single Thing> Give a name to the thing> 
+![create things 2](https://github.com/user-attachments/assets/93b6cee2-a478-4fe2-bf6b-2f72bd2db795)
+![create things 3](https://github.com/user-attachments/assets/7aa39517-6263-486c-866b-6a85f55cf420)
+
+Automatically create certificate> Attach IlightESP32_MQTTPolicy > Download all the files in the popup
+![create things 4](https://github.com/user-attachments/assets/43da850e-c5de-4d21-be60-27af62a20a2b)
+![create things 5](https://github.com/user-attachments/assets/f60a2cc1-1bdb-4205-8ae2-329104a8431d)
+![create things 6](https://github.com/user-attachments/assets/34ca4a0c-e3b4-42bc-a7e7-21c0e6ec925d)
+
+## Step 3: Edit the Secrets.h file
+
+At every comment that says change me, change out the dependencies. The following is to be changed:
+- Thing name
+- Wifi SSID
+- Wifi Password
+- Endpoint
+- Amazon Root CA 1
+- Device Certificate      
+- Device Private Key   
+![thingname](https://github.com/user-attachments/assets/503cf802-c454-47f0-b128-103a7ed3c740)
+![private key](https://github.com/user-attachments/assets/5cf7d4be-7adf-4a57-90b9-d12ecb3d6656)
+
+## Step 4: Flash the ESP32
+Press once the Reset pin while flashing so that the old sketch can be removed
+
+## Step 5: Check for confirmation message that connection is established
+Open the serial monitor which is set to 115200 Baud rate, check for the following messages. The “...” output will continue until connection is established
+![photo_6224332318819075757_y](https://github.com/user-attachments/assets/f73f8050-7021-4ac1-a471-ce4b2195bb50)
