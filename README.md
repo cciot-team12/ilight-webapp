@@ -301,8 +301,10 @@ At every comment that says change me, change out the dependencies. The following
 - Endpoint
 - Amazon Root CA 1
 - Device Certificate      
-- Device Private Key   
-![thingname](https://github.com/user-attachments/assets/503cf802-c454-47f0-b128-103a7ed3c740)
+- Device Private Key
+e.g
+![thingname](https://github.com/user-attachments/assets/98c6d8ae-d294-4165-ac37-3e97dd9aa76c)
+e.g
 ![private key](https://github.com/user-attachments/assets/5cf7d4be-7adf-4a57-90b9-d12ecb3d6656)
 
 ## Step 4: Flash the ESP32
